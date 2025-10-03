@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Tokatlıyoruz!</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+         :root {
+            --bg: #f6f8fb;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #ef4444;
+            --accent-2: #f97316;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            padding: 60px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-size: 18px;
+            color: var(--text);
+            background: var(--bg);
+        }
+        
+        .wrap {
+            width: min(1080px, 100%);
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0 0 28px;
+            font-size: clamp(28px, 4vw, 40px)
+        }
+        
+        .stats {
+            display: grid;
+            gap: 12px;
+            margin: 24px auto 28px;
+            color: var(--muted);
+            font-size: clamp(16px, 2.6vw, 20px)
+        }
+        
+        .stats b {
+            color: var(--text)
+        }
+        /* Görsel ve videoyu yan yana – boşluk YOK */
+        
+        .avatar-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            /* ← aradaki boşluk sıfır */
+            margin: 10px auto 20px;
+            background: #fff;
+            padding: 12px 0;
+            /* kenar pedini azalttık */
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .1);
+            overflow: hidden;
+            /* birleşim çizgilerini gizle */
+        }
+        
+        #target {
+            width: 320px;
+            height: auto;
+            display: block;
+            margin: 0;
+            border-radius: 0;
+            /* bitişik görünüm için kenarları düzleştir */
+            transition: transform .08s ease;
+        }
+        
+        #slapVideo {
+            width: 240px;
+            height: auto;
+            display: block;
+            margin: 0;
+            border-radius: 0;
+            /* bitişik görünüm */
+            box-shadow: none;
+            /* arada gölge görünmesin */
+            opacity: 0;
+            transform: translateX(240px);
+            transition: opacity .2s ease, transform .25s ease;
+        }
+        
+        #slapVideo.show {
+            opacity: 1;
+            transform: translateX(0)
+        }
+        
+        .shake {
+            animation: shake .18s linear 1
+        }
+        
+        @keyframes shake {
+            0% {
+                transform: translateX(0)
+            }
+            25% {
+                transform: translateX(-18px) rotate(-2deg)
+            }
+            50% {
+                transform: translateX(12px) rotate(2deg)
+            }
+            75% {
+                transform: translateX(-8px) rotate(-1deg)
+            }
+            100% {
+                transform: translateX(0)
+            }
+        }
+        
+        .btn {
+            appearance: none;
+            border: 0;
+            cursor: pointer;
+            padding: 18px 28px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 10px 22px rgba(239, 68, 68, .35);
+            transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+        }
+        
+        .btn:hover {
+            filter: brightness(1.05)
+        }
+        
+        .btn:active {
+            transform: translateY(1px) scale(.98);
+            box-shadow: 0 5px 12px rgba(239, 68, 68, .35)
+        }
+        
+        .count-big {
+            font-size: clamp(44px, 7vw, 72px);
+            font-weight: 800;
+            margin: 16px 0 0
+        }
+        
+        .record {
+            margin-top: 10px;
+            color: #111;
+            font-weight: 700;
+            font-size: 50px
+        }
+        
+        .note {
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 20px
+        }
+        
+        footer {
+            margin-top: 50px;
+            font-size: 50px;
+            font-weight: bold;
+            color: var(--accent)
+        }
+    </style>
+</head>
+
+<body>
+    <main class="wrap">
+        <h1>Keremi Tokatlıyoruz.</h1>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="avatar-wrap">
+            <img id="target" src="images/selfie_drawing_style.png" alt="Karikatür Surat">
+            <video id="slapVideo" preload="auto" playsinline muted>
+        <source src="videos/videoS - Trim.mp4" type="video/mp4">
+      </video>
+        </div>
+
+        <div><button id="slapBtn" class="btn">Tokatla 😡</button></div>
+
+        <div class="count-big" id="sessionCount">0</div>
+        <div class="record" id="recordText">Tokat rekorun: 0</div>
+        <div class="note">Sayaçlar tarayıcında saklanır (cihaza özeldir).</div>
+
+        <footer>Gidişine illa bir isim konulacaksa MAL KAYBI diyelim.</footer>
+    </main>
+
+    <script>
+        // Sayaçlar
+        const LS_TOTAL = "slap_total",
+            LS_RECORD = "slap_record",
+            LS_BASE = "slap_base_seed";
+        let base = +localStorage.getItem(LS_BASE);
+        if (!base) {
+            base = Math.floor(50000000 + Math.random() * 30000000);
+            localStorage.setItem(LS_BASE, base);
+        }
+        let total = +localStorage.getItem(LS_TOTAL) || 0;
+        let record = +localStorage.getItem(LS_RECORD) || 0;
+        let session = 0;
+
+        const statsEl = document.getElementById("stats");
+        const targetImg = document.getElementById("target");
+        const video = document.getElementById("slapVideo");
+        const sessionCountEl = document.getElementById("sessionCount");
+        const recordTextEl = document.getElementById("recordText");
+        const btn = document.getElementById("slapBtn");
+
+        function format(n) {
+            return n.toLocaleString("tr-TR");
+        }
+
+        function renderStats() {
+            statsEl.innerHTML = `
+        <div>Bugüne kadar <b>${format(base+total)}</b> kere tokatlandı!</div>
+        <div>Şu an <b>${format(session)}</b> kere tokatladın!</div>`;
+            sessionCountEl.textContent = format(session);
+            recordTextEl.textContent = "Tokat rekorun: " + format(record);
+        }
+
+        video.addEventListener("ended", () => video.classList.remove("show"));
+
+        function slap() {
+            targetImg.classList.remove("shake");
+            requestAnimationFrame(() => targetImg.classList.add("shake"));
+            setTimeout(() => targetImg.classList.remove("shake"), 400);
+
+            try {
+                video.pause();
+                video.currentTime = 0;
+                video.classList.add("show");
+                video.play().catch(() => {
+                    video.muted = true;
+                    video.play().catch(() => {});
+                });
+            } catch (e) {}
+
+            session++;
+            total++;
+            if (session > record) {
+                record = session;
+                localStorage.setItem(LS_RECORD, record);
+            }
+            localStorage.setItem(LS_TOTAL, total);
+            renderStats();
+        }
+
+        renderStats();
+        btn.addEventListener("click", slap);
+    </script>
+</body>
+
+</html>
