@@ -5,47 +5,43 @@
   <title>Tokatlıyoruz!</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root{
-      --bg:#f6f8fb; --text:#1f2937; --muted:#6b7280;
-      --accent:#ef4444; --accent-2:#f97316;
-    }
+    :root{ --bg:#f6f8fb; --text:#1f2937; --muted:#6b7280; --accent:#ef4444; --accent-2:#f97316; }
     *{box-sizing:border-box}
+
     body{
-      margin:0; padding:32px 14px; min-height:100vh;
+      margin:0; padding:28px 12px; min-height:100vh;
       display:flex; align-items:flex-start; justify-content:center;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       font-size:16px; color:var(--text); background:var(--bg);
     }
-    .wrap{ width:min(900px,100%); text-align:center; }
+    .wrap{ width:min(880px,100%); text-align:center; }
 
-    h1{ margin:0 0 18px; font-size:clamp(20px,4.4vw,32px) }
+    h1{ margin:0 0 14px; font-size:clamp(20px,4.2vw,30px) }
 
     .stats{
-      display:grid; gap:8px; margin:14px auto 18px;
-      color:var(--muted); font-size:clamp(13px,2.8vw,17px)
+      display:grid; gap:8px; margin:12px auto 16px;
+      color:var(--muted); font-size:clamp(13px,2.7vw,17px)
     }
     .stats b{ color:var(--text) }
 
-    /* Görsel ve video – yan yana, taşma yok; boşluk sıfır */
+    /* Görsel + video: yan yana, kompakt */
     .avatar-wrap{
       display:flex; align-items:center; justify-content:center; flex-wrap:nowrap;
-      gap:0; margin:10px auto 16px; background:#fff;
-      padding:10px 0; border-radius:16px;
+      gap:0; margin:10px auto 14px; background:#fff;
+      padding:8px 0; border-radius:14px;
       box-shadow:0 6px 18px rgba(0,0,0,.08); overflow:hidden;
-      /* En fazla genişlik: iki eleman yanyana sığsın */
-      max-width: 100%;
+      max-width:100%;
     }
-
-    /* Boyutlar ekrana göre akıcı küçülür */
+    /* Ekrana göre akıcı küçülür (mobilde de yan yana sığar) */
     #target{
-      width:clamp(140px, 28vw, 260px);
+      width:clamp(120px, 26vw, 220px);
       height:auto; display:block; margin:0; border-radius:0;
       transition:transform .08s ease;
     }
     #slapVideo{
-      width:clamp(110px, 22vw, 200px);
+      width:clamp(95px, 20vw, 180px);
       height:auto; display:block; margin:0; border-radius:0;
-      box-shadow:none; opacity:0; transform:translateX(35%);
+      box-shadow:none; opacity:0; transform:translateX(32%);
       transition:opacity .2s ease, transform .25s ease;
     }
     #slapVideo.show{ opacity:1; transform:translateX(0) }
@@ -53,17 +49,17 @@
     .shake{ animation:shake .18s linear 1 }
     @keyframes shake{
       0%{transform:translateX(0)}
-      25%{transform:translateX(-12px) rotate(-2deg)}
-      50%{transform:translateX(9px) rotate(2deg)}
-      75%{transform:translateX(-6px) rotate(-1deg)}
+      25%{transform:translateX(-10px) rotate(-2deg)}
+      50%{transform:translateX(8px) rotate(2deg)}
+      75%{transform:translateX(-5px) rotate(-1deg)}
       100%{transform:translateX(0)}
     }
 
     .btn{
       appearance:none; border:0; cursor:pointer;
-      padding:clamp(12px,2.8vw,16px) clamp(18px,4.2vw,24px);
+      padding:clamp(10px,2.6vw,14px) clamp(16px,4vw,22px);
       border-radius:999px; font-weight:700;
-      font-size:clamp(14px,3.8vw,18px); color:#fff;
+      font-size:clamp(14px,3.6vw,18px); color:#fff;
       background:linear-gradient(135deg,var(--accent),var(--accent-2));
       box-shadow:0 8px 18px rgba(239,68,68,.30);
       transition:transform .06s ease, box-shadow .2s ease, filter .2s ease;
@@ -71,17 +67,14 @@
     .btn:hover{ filter:brightness(1.05) }
     .btn:active{ transform:translateY(1px) scale(.98); box-shadow:0 5px 12px rgba(239,68,68,.30) }
 
-    .count-big{ font-size:clamp(28px,10vw,56px); font-weight:800; margin:12px 0 0 }
-    .record{ margin-top:8px; color:#111; font-weight:700; font-size:clamp(16px,4.6vw,22px) }
-    .note{ margin-top:14px; color:var(--muted); font-size:clamp(12px,3.8vw,16px) }
-    footer{ margin-top:28px; font-size:clamp(16px,4.8vw,22px); font-weight:bold; color:var(--accent) }
+    .count-big{ font-size:clamp(26px,9vw,52px); font-weight:800; margin:10px 0 0 }
+    .record{ margin-top:6px; color:#111; font-weight:700; font-size:clamp(16px,4.4vw,22px) }
+    .note{ margin-top:12px; color:var(--muted); font-size:clamp(12px,3.6vw,15px) }
+    footer{ margin-top:24px; font-size:clamp(16px,4.6vw,22px); font-weight:bold; color:var(--accent) }
 
-    /* Küçük ekran iyileştirmeleri (yan yana kalsın ama daha da küçülsün) */
-    @media (max-width: 420px){
-      .avatar-wrap{ padding:6px 0 }
-      #target{ width:clamp(120px, 40vw, 200px) }
-      #slapVideo{ width:clamp(90px, 30vw, 160px) }
-    }
+    /* Eski CSS'i ezmek için kritik kurallar (garanti) */
+    .wrap{ width:min(880px,100%) !important; }
+    .avatar-wrap{ gap:0 !important; flex-wrap:nowrap !important; padding:8px 0 !important; }
   </style>
 </head>
 <body>
@@ -107,7 +100,6 @@
   </main>
 
   <script>
-    // Sayaçlar
     const LS_TOTAL="slap_total", LS_RECORD="slap_record", LS_BASE="slap_base_seed";
     let base=+localStorage.getItem(LS_BASE);
     if(!base){ base=Math.floor(50000000+Math.random()*30000000); localStorage.setItem(LS_BASE,base); }
